@@ -7,21 +7,16 @@
   "scripts": {
     "dev:renderer": "pnpm exec electron dev-server.mjs",
     "dev:main": "cross-env NODE_ENV=development pnpm dev:main_",
-    "dev:main_": "pnpm build:main --mode development && pnpm build:preload --mode development && electron out/main/index.mjs",
-    "build:main": "pnpm --filter electron-main build:main",
-    "build:preload": "pnpm --filter electron-main build:preload",
-    "build:renderer": "pnpm --filter renderer build",
-    "build:unpack": "pnpm build:renderer && pnpm build:main && pnpm build:preload && electron-builder --dir",
-    "build": "pnpm build:renderer && pnpm build:main && pnpm build:preload && electron-builder",
-    "typecheck:main": "pnpm --filter electron-main typecheck:main",
-    "typecheck:preload": "pnpm --filter electron-main typecheck:preload",
-    "typecheck:renderer": "pnpm --filter renderer typecheck",
-    "typecheck": "pnpm typecheck:main && pnpm typecheck:preload && pnpm typecheck:renderer"
+    "dev:main_": "pnpm --filter main exec vite build --mode development && pnpm --filter preload exec vite build --mode development && electron out/main/index.mjs",
+    "build": "turbo run build && electron-builder",
+    "build:unpack": "turbo run build && electron-builder --dir",
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
     "electron": "^36.9.5",
-    "electron-builder": "^26.8.1"
+    "electron-builder": "^26.8.1",
+    "turbo": "^2"
   },
   "packageManager": "pnpm@9.14.4",
   "exports": {
