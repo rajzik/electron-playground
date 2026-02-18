@@ -1,0 +1,25 @@
+# Local
+.DS_Store
+*.local
+*.log*
+
+# Dist
+node_modules
+dist/
+out
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# vim
+.*.swp
+
+# memo
+*.local.md
+
+# env
+.env
+.env.*
+.react-router/

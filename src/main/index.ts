@@ -28,7 +28,7 @@ console.debug("main: import.meta.env:", import.meta.env);
     global.process.env.APP_PATH_ROOT ?? import.meta.env.VITE_APP_PATH_ROOT;
   if (root === undefined) {
     console.info(
-      "no given APP_PATH_ROOT or VITE_APP_PATH_ROOT. default path is used."
+      "no given APP_PATH_ROOT or VITE_APP_PATH_ROOT. default path is used.",
     );
     return;
   }
@@ -99,6 +99,22 @@ const createWindow = async (rendererURL: string) => {
   return win;
 };
 
+app.on("ready", async () => {
+  if (isDev) {
+    // Load only in development mode
+    const { createServer } = await import("vite");
+    const viteServer = await createServer({
+      root: "./src/renderer",
+      envDir: join(dirname(import.meta.filename), "../.."), // load .env files from the root directory.
+      server: {
+        port: 5173,
+      },
+    });
+    await viteServer.listen();
+    viteServer.printUrls();
+  }
+});
+
 console.time("start whenReady");
 const rendererClientPath = join(__dirname, "../renderer/client");
 let viteServer: ViteDevServer;
@@ -111,7 +127,9 @@ declare global {
   await app.whenReady();
   const serverBuild = isDev
     ? null // serverBuild is not used in dev.
-    : await import(pathToFileURL(join(__dirname, "../renderer/server/index.js")).href);
+    : await import(
+        pathToFileURL(join(__dirname, "../renderer/server/index.js")).href
+      );
   protocol.handle("http", async (req) => {
     const url = new URL(req.url);
     if (
@@ -171,10 +189,10 @@ declare global {
     let count = 0;
     setInterval(
       () => win.webContents.send("ping", `hello from main! ${count++}`),
-      5 * 1000
+      5 * 1000,
     );
     ipcMain.handle("ipcTest", (event, ...args) =>
-      console.debug("ipc: renderer -> main", { event, ...args })
+      console.debug("ipc: renderer -> main", { event, ...args }),
     );
     return win;
   })
@@ -207,7 +225,7 @@ const setupMenu = (win: BrowserWindow): void => {
           },
         ],
       },
-    ])
+    ]),
   );
 };
 
@@ -241,7 +259,7 @@ app.on("before-quit", async (_event) => {
 // serve assets built by vite.
 export async function serveAsset(
   req: Request,
-  assetsPath: string
+  assetsPath: string,
 ): Promise<Response | undefined> {
   const url = new URL(req.url);
   const fullPath = join(assetsPath, decodeURIComponent(url.pathname));
