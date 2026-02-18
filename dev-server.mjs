@@ -12,7 +12,7 @@ global.__electron__ = electron;
 const env = loadEnv("development", process.cwd());
 process.env = { ...process.env, ...env };
 
-const viteServer = await createServer({ root: "./src/renderer" });
+const viteServer = await createServer({ root: "./packages/renderer" });
 await viteServer.listen();
 viteServer.printUrls();
 console.debug("version:", app.getVersion());
