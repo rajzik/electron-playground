@@ -4,13 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev": "vite build --mode development && electron out/main/index.mjs",
     "build": "vite build",
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
     "electron-log": "^5.4.3",
     "electron-store": "^10.1.0",
-    "electron-updater": "^6.6.2"
+    "electron-updater": "^6.6.2",
+    "trpc-api": "workspace:*"
   },
   "devDependencies": {
     "electron": "^36.9.5",
@@ -18,5 +20,10 @@
     "typescript": "^5.9.3",
     "vite": "^6.4.1",
     "vite-plugin-node-polyfills": "^0.23.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./out/main/index.mjs"
+    }
   }
 }

@@ -1,16 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { trpc } from "../trpc";
 import { App } from "../components/App";
 
 export const Route = createFileRoute("/")({
-  loader: async () => {
-    const info = await window.ipc?.invoke("getAppInfo");
-    return { version: info?.version ?? "N/A", userData: info?.userData ?? "N/A" };
-  },
   component: Index,
 });
 
 function Index() {
-  const { version, userData } = Route.useLoaderData();
+  const { data } = trpc.getAppInfo.useQuery();
 
   return (
     <main className="container mx-auto p-8 grid gap-4">
@@ -19,7 +16,7 @@ function Index() {
           Electron + TanStack Router + Vite + TailwindCSS
         </h1>
         <ul className="list-disc list-inside text-sm">
-          <li>Electron API is available via IPC.</li>
+          <li>Electron API is available via tRPC over IPC.</li>
           <li>TanStack Router for client-side routing.</li>
           <li>Built by Vite.</li>
           <li>Styled by TailwindCSS v4.</li>
@@ -27,17 +24,17 @@ function Index() {
       </div>
 
       <div>
-        <h2 className="font-bold">Given by Electron API</h2>
+        <h2 className="font-bold">Given by Electron API (via tRPC)</h2>
         <p className="text-sm">
           version:{" "}
           <code className="bg-slate-200 p-1 rounded-xs text-[10px]">
-            {version}
+            {data?.version ?? "loading..."}
           </code>
         </p>
         <p className="text-sm">
           userData:{" "}
           <code className="bg-slate-200 p-1 rounded-xs text-[10px]">
-            {userData}
+            {data?.userData ?? "loading..."}
           </code>
         </p>
       </div>

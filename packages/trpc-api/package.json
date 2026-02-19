@@ -1,0 +1,19 @@
+{
+  "name": "trpc-api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trpc/server": "^11",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
