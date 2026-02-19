@@ -88,6 +88,10 @@ const createWindow = async (rendererURL: string) => {
   console.debug("loadURL: rendererURL:", rendererURL);
   win.loadURL(rendererURL);
 
+  if (isDev) {
+    win.webContents.openDevTools();
+  }
+
   const boundsListener = () => {
     const bounds = win.getBounds();
     store.set("bounds", bounds);
