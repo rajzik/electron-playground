@@ -2,10 +2,13 @@ import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig, type PluginOption } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+
 export default defineConfig({
   plugins: [
-    reactRouter() as PluginOption,
     tailwindcss(),
+    nodePolyfills(),
+    reactRouter() as PluginOption,
     // tsconfigPaths(), // no need to use this plugin. I don't like path aliases so much.
   ],
   build: {

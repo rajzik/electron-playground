@@ -6,7 +6,7 @@
   "main": "out/main/index.mjs",
   "scripts": {
     "dev:renderer": "pnpm exec electron dev-server.mjs",
-    "dev:main": "cross-env NODE_ENV=development pnpm dev:main_",
+    "dev:main": "NODE_ENV=development pnpm dev:main_",
     "dev:main_": "pnpm build:main --mode development && pnpm build:preload --mode development && electron out/main/index.mjs",
     "build:main": "vite build --config ./src/main/vite.config.ts",
     "build:preload": "vite build --config ./src/preload/vite.config.ts",
@@ -21,7 +21,8 @@
   "dependencies": {
     "electron-log": "^5.4.3",
     "electron-store": "^10.1.0",
-    "electron-updater": "^6.6.2"
+    "electron-updater": "^6.6.2",
+    "electron-serve": "3.0.1"
   },
   "devDependencies": {
     "@react-router/dev": "^7.9.3",
@@ -43,7 +44,8 @@
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^6.3.6",
-    "vite-plugin-node-polyfills": "^0.23.0"
+    "vite-plugin-node-polyfills": "^0.25.0",
+    "rollup-plugin-node-externals": "^8.1.2"
   },
   "packageManager": "pnpm@9.14.4",
   "exports": {
