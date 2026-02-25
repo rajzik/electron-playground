@@ -1,24 +1,22 @@
-import { reactRouter } from "@react-router/dev/vite";
-import { defineConfig, type PluginOption } from "vite";
+import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
-
+import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 
 export default defineConfig({
   plugins: [
     tailwindcss(),
     nodePolyfills(),
-    reactRouter() as PluginOption,
+    tanstackRouter({
+      target: 'react',
+      autoCodeSplitting: true,
+    }),
+    react(),
     // tsconfigPaths(), // no need to use this plugin. I don't like path aliases so much.
   ],
   build: {
     minify: false,
     emptyOutDir: false,
-    rollupOptions: {
-      external: [
-        "fs", // suppress vite warning: [plugin:vite:resolve] [plugin vite:resolve] Module "fs" has been externalized for browser compatibility
-        "path", // suppress vite warning: [plugin:vite:resolve] [plugin vite:resolve] Module "path" has been externalized for browser compatibility
-      ],
-    },
   },
 });

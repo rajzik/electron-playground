@@ -1,21 +1,15 @@
 /// <reference types="vite/client" />
-import { createReadableStreamFromReadable } from "@react-router/node";
-
-import { createRequestHandler } from "react-router";
 import electron, {
   app,
   BrowserWindow,
   ipcMain,
   Menu,
-  protocol,
 } from "electron";
 import log from "electron-log"; // write logs into ${app.getPath("logs")}/main.log without `/main`.
-import serve from "electron-serve";
 import ElectronStore from "electron-store";
-import mime from "mime";
-import { createReadStream, promises as fs } from "node:fs";
+import { promises as fs } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { setupTRPC } from "./trpc/setupTRPC";
 import { createServer, ViteDevServer } from "vite";
 import * as pkg from "../../package.json";
@@ -68,7 +62,6 @@ const __dirname = dirname(__filename);
 
 const directory = join(__dirname, "../renderer/client"); // This file is in the above (a). To point the `out`, move up twice.
 console.debug("loadURL: directory:", directory);
-const loadURL = serve({ directory });
 
 const isDev = !(global.process.env.NODE_ENV === "production" || app.isPackaged);
 console.debug("main: isDev:", isDev);
@@ -91,6 +84,7 @@ const createWindow = async (rendererURL: string) => {
     },
     webPreferences: {
       preload: join(__dirname, "../preload/index.cjs"),
+      devTools: true,
     },
   });
 
@@ -103,12 +97,16 @@ const createWindow = async (rendererURL: string) => {
   };
   win.on("moved", boundsListener);
   win.on("resized", boundsListener);
-
+  win.webContents.on("did-finish-load", () => {
+    console.debug("did-finish-load");
+    win.webContents.openDevTools({
+      mode: "right",
+    });
+  });
   return win;
 };
 
 console.time("start whenReady");
-const rendererClientPath = join(__dirname, "../renderer/client");
 let viteServer: ViteDevServer;
 
 declare global {
@@ -117,38 +115,6 @@ declare global {
 
 (async () => {
   await app.whenReady();
-  const serverBuild = isDev
-    ? null // serverBuild is not used in dev.
-    : await import(pathToFileURL(join(__dirname, "../renderer/server/index.js")).href);
-  protocol.handle("http", async (req) => {
-    const url = new URL(req.url);
-    if (
-      !["localhost", "127.0.0.1"].includes(url.hostname) ||
-      (url.port && url.port !== "80")
-    ) {
-      return await fetch(req);
-    }
-
-    req.headers.append("Referer", req.referrer);
-    try {
-      const res = await serveAsset(req, rendererClientPath);
-      if (res) {
-        return res;
-      }
-
-      const handler = createRequestHandler(serverBuild, "production");
-      return await handler(req, {
-        /* context */
-      });
-    } catch (err) {
-      console.warn(err);
-      const { stack, message } = toError(err);
-      return new Response(`${stack ?? message}`, {
-        status: 500,
-        headers: { "content-type": "text/html" },
-      });
-    }
-  });
 
   const rendererURL = await (isDev
     ? (async () => {
@@ -245,37 +211,6 @@ app.on("before-quit", async (_event) => {
     console.error("failed to close Vite server:", err);
   }
 });
-
-// serve assets built by vite.
-export async function serveAsset(
-  req: Request,
-  assetsPath: string
-): Promise<Response | undefined> {
-  const url = new URL(req.url);
-  const fullPath = join(assetsPath, decodeURIComponent(url.pathname));
-  if (!fullPath.startsWith(assetsPath)) {
-    return;
-  }
-
-  const stat = await fs.stat(fullPath).catch(() => undefined);
-  if (!stat?.isFile()) {
-    // Nothing to do for directories.
-    return;
-  }
-
-  const headers = new Headers();
-  const mimeType = mime.getType(fullPath);
-  if (mimeType) {
-    headers.set("Content-Type", mimeType);
-  }
-
-  const body = createReadableStreamFromReadable(createReadStream(fullPath));
-  return new Response(body, { headers });
-}
-
-function toError(value: unknown) {
-  return value instanceof Error ? value : new Error(String(value));
-}
 
 // Reload on change.
 let isQuited = false;

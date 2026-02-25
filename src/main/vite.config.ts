@@ -1,9 +1,10 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
+import { nodeExternals } from 'rollup-plugin-node-externals';
+
 
 export default defineConfig({
-  plugins: [nodePolyfills()],
+  plugins: [nodeExternals()],
   build: {
     lib: {
       entry: resolve("src/main/index.ts"),
@@ -16,14 +17,6 @@ export default defineConfig({
         "electron-serve",
         "electron-store",
         "electron-updater",
-        ...[
-          // electron-log uses fs internally
-          "fs",
-          "util",
-        ],
-        "node:fs", // without this, fs becomes null when imported. `import fs from "node:path"`
-        // "@react-router/node",
-        // "mime", // NOTE: don't enable. not working if it's external.
         "vite", // NOTE: viteDevServer is used in the src/main/index.ts. Not ideal, but needed for now.
       ],
       output: {

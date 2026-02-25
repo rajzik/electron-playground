@@ -20,6 +20,13 @@ const ipc = t.router({
 
   loginItemSettings: t.procedure.query(() => app.getLoginItemSettings()),
 
+  getSomething: t.procedure.query(() => {
+    return {
+      a: "hello from main",
+      b: 123,
+    };
+  }),
+
   sendSomething: t.procedure
     .input(z.object({ a: z.string(), b: z.number() }))
     .mutation(({ input }) => {

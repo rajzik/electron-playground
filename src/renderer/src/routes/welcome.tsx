@@ -1,4 +1,9 @@
-import { NavLink } from "react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+
+
+export const Route = createFileRoute('/welcome')({
+  component: Index,
+})
 
 export default function Index() {
   return (
@@ -10,7 +15,7 @@ export default function Index() {
           </h1>
         </header>
         <nav className="flex flex-col items-center justify-center">
-          <NavLink to="/">Back to the top.</NavLink>
+          <Link to="/">Back to the top.</Link>
         </nav>
       </div>
     </div>

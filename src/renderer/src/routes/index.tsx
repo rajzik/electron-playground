@@ -1,22 +1,23 @@
 /// <reference types="vite/client" />
 
-import type { Route } from "./+types/_index";
-import { NavLink, useLoaderData } from "react-router";
 import App from "../App";
 import { ipcTRPC } from "../trpc/TRPCReactProvider";
-// import log from "electron-log/renderer"; // TOOD: check how to effectively use electron-log in renderer
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 const isDev = import.meta.env.DEV;
 console.debug("renderer: isDev:", isDev);
 console.debug("renderer: import.meta.env:", import.meta.env);
 
-export default function Index() {
-  const v: Route.MetaArgs["data"] = useLoaderData();
-  console.debug("loaderData:", v);
 
+export const Route = createFileRoute('/')({
+  component: Index,
+})
+
+export default function Index() {
   const getPath = ipcTRPC.ipc.getPath.useQuery("home");
   const e = ipcTRPC.ipc.loginItemSettings.useQuery();
-
+  const something = ipcTRPC.ipc.getSomething.useQuery();
+  console.log({ getPath, something });
   return (
     <main className="container mx-auto p-8 grid gap-4">
       <div>
@@ -40,6 +41,13 @@ export default function Index() {
           </code>
         </p>
         <p className="text-sm">
+          something:{" "}
+          <code className="bg-slate-200 p-1 rounded-xs text-[10px]">
+          {something.data?.a}
+          {something.data?.b}
+          </code>
+        </p>
+        <p className="text-sm">
           userData:{" "}
           <code className="bg-slate-200 p-1 rounded-xs text-[10px]">
           {e.data?.status}{/* {v.userData} */}
@@ -49,11 +57,14 @@ export default function Index() {
 
       <App />
 
-      <div>
+      <div className="flex gap-2 flex-col">
         <h2 className="font-bold">Routing</h2>
-        <NavLink to="/welcome" className="hover:underline text-sm">
+        <Link to="/welcome" className="hover:underline text-sm">
           To Welcome page
-        </NavLink>
+        </Link>
+        <Link to="/app" className="hover:underline text-sm">
+          To App page
+        </Link>
       </div>
     </main>
   );
