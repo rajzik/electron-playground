@@ -18,6 +18,7 @@
     "typecheck": "pnpm typecheck:main && pnpm typecheck:preload && pnpm typecheck:renderer"
   },
   "dependencies": {
+    "@tanstack/devtools-vite": "^0.5.1",
     "@tanstack/react-devtools": "^0.9.6",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-router": "^1.162.9",

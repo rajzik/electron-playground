@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from "electron";
-import type { TRPCBridge } from "../renderer/app/trpc/trpc-bridge";
+import type { TRPCBridge } from "../renderer/src/trpc/trpc-bridge.d.ts";
 
 console.debug("start preload.", ipcRenderer);
 
