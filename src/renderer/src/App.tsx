@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { ipcTRPC } from "./trpc/TRPCReactProvider";
+import { trpc } from "./trpc/TRPCReactProvider";
+import { useMutation } from "@tanstack/react-query";
 
 const App = () => {
-  const getPath = ipcTRPC.ipc.sendSomething.useMutation();
+  const getPath = useMutation(trpc.ipc.sendSomething.mutationOptions());
 
   useEffect(() => {
     if (!window.__$ipc__) {
@@ -23,7 +24,7 @@ const App = () => {
       <h2 className="font-bold">IPC is available</h2>
       <button
         onClick={async () => {
-          const v = await getPath.mutateAsync({ a: "hello", b: 123 });
+          const v = await getPath.mutateAsync({ a: "hello", b: 123, c: true });
           console.log({ v });
         }}
         className="bg-blue-500 text-white p-2 rounded-sm text-xs shadow-xs hover:bg-blue-600"

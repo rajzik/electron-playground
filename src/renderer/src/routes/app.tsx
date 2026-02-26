@@ -1,13 +1,14 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { ipcTRPC } from "../trpc/TRPCReactProvider";
-import { useEffect } from 'react';
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ipcTRPC, trpc } from "../trpc/TRPCReactProvider";
+import { useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const Route = createFileRoute('/app')({
+export const Route = createFileRoute("/app")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const getPath = ipcTRPC.ipc.sendSomething.useMutation();
+  const getPath = useMutation(trpc.ipc.sendSomething.mutationOptions());
 
   useEffect(() => {
     if (!window.__$ipc__) {
@@ -28,7 +29,7 @@ function RouteComponent() {
       <h2 className="font-bold">IPC is available</h2>
       <button
         onClick={async () => {
-          const v = await getPath.mutateAsync({ a: "hello", b: 123 });
+          const v = await getPath.mutateAsync({ a: "hello", b: 123, c: true });
           console.log({ v });
         }}
         className="bg-blue-500 text-white p-2 rounded-sm text-xs shadow-xs hover:bg-blue-600"
@@ -37,7 +38,9 @@ function RouteComponent() {
       </button>{" "}
       to main through IPC on tRPC.
       <div className="flex gap-2 flex-col">
-      <Link to="/" className="hover:underline text-sm">Back to the top</Link>
+        <Link to="/" className="hover:underline text-sm">
+          Back to the top
+        </Link>
       </div>
     </div>
   );

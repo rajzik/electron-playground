@@ -4,7 +4,7 @@ import superjson from "superjson";
 import { z } from "zod";
 
 // sample context
-const createContext = async () => {
+export const createContext = async () => {
   return { foo: "baz" };
 };
 
@@ -27,14 +27,34 @@ const ipc = t.router({
     };
   }),
 
+  getSomething2: t.procedure.query(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return {
+      a: "hello from main",
+      b: 123,
+    };
+  }),
+
   sendSomething: t.procedure
-    .input(z.object({ a: z.string(), b: z.number() }))
+    .input(z.object({ a: z.string(), b: z.number(), c: z.boolean() }))
     .mutation(({ input }) => {
       console.debug("sendSomething", input);
       return input.b + 100;
     }),
 });
 
+const someRouter = t.router({
+  getSomeData: t.procedure.query(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return {
+      a: "hello from main",
+      b: 123,
+    };
+  }),
+});
+
 const root = initTRPC.create();
-export const rootRouter = root.router({ ipc });
+export const rootRouter = root.router({ ipc, someRouter });
 export type RootRouter = typeof rootRouter;
